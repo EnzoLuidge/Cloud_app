@@ -6,7 +6,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Configurar o cliente DynamoDB
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource('dynamodb', region_name='sa-east-1')
 table = dynamodb.Table('MyApplicationData')
 
 @app.route('/')
