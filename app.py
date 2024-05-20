@@ -49,7 +49,7 @@ def post():
         return redirect('/')
     except Exception as e:
         print(f"Erro ao inserir dados: {str(e)}")
-        return "Erro ao adicionar o item", 500
+        return redirect('/')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
