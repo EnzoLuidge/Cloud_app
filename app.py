@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, url_for
 import boto3
 import uuid
 from datetime import datetime
@@ -49,6 +49,58 @@ def post():
         return redirect('/')
     except Exception as e:
         print(f"Erro ao inserir dados: {str(e)}")
+        return redirect('/')
+
+@app.route('/edit/<post_id>', methods=['GET', 'POST'])
+def edit(post_id):
+    if request.method == 'POST':
+        # Capturar dados do formulário
+        title = request.form['title']
+        content = request.form['content']
+
+        # Atualizar os dados na tabela DynamoDB
+        try:
+            response = table.update_item(
+                Key={
+                    'Id': post_id
+                },
+                UpdateExpression="set Title=:t, Content=:c",
+                ExpressionAttributeValues={
+                    ':t': title,
+                    ':c': content
+                },
+                ReturnValues="UPDATED_NEW"
+            )
+            return redirect('/')
+        except Exception as e:
+            print(f"Erro ao atualizar dados: {str(e)}")
+            return redirect('/')
+
+    # Recuperar o post atual
+    try:
+        response = table.get_item(
+            Key={
+                'Id': post_id
+            }
+        )
+        item = response.get('Item', {})
+        return render_template('edit.html', post=item)
+    except Exception as e:
+        print(f"Erro ao recuperar dados: {str(e)}")
+        return redirect('/')
+
+@app.route('/delete/<post_id>', methods=['POST'])
+def delete(post_id):
+    # Excluir os dados na tabela DynamoDB
+    try:
+        response = table.delete_item(
+            Key={
+                'Id': post_id
+            }
+        )
+        return redirect('/')
+    except Exception as e:
+        print(f"Erro ao excluir dados: {str(e)}")
         return redirect('/')
 
 if __name__ == '__main__':
