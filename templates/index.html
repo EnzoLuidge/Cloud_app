@@ -27,6 +27,7 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
         }
         h2 {
             color: #333;
@@ -64,6 +65,34 @@
         input[type="submit"]:hover {
             background-color: #45a049;
         }
+        .edit-button, .delete-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            margin-left: 5px;
+        }
+        .edit-button {
+            background-color: #ffc107;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .edit-button:hover {
+            background-color: #e0a800;
+        }
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .delete-button:hover {
+            background-color: #d32f2f;
+        }
     </style>
 </head>
 <body>
@@ -83,9 +112,12 @@
             <div class="post">
                 <h2>{{ post['Title'] }}</h2>
                 <p>{{ post['Content'] }}</p>
+                <a href="{{ url_for('edit', post_id=post['Id']) }}" class="edit-button">Edit</a>
+                <form action="{{ url_for('delete', post_id=post['Id']) }}" method="post" style="display:inline;">
+                    <button type="submit" class="delete-button">Delete</button>
+                </form>
             </div>
         {% endfor %}
-        
     </div>
 </body>
 </html>
