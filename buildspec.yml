@@ -23,7 +23,7 @@ phases:
           STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].StackStatus" --output text)
           echo "Current stack status: $STACK_STATUS"
         }
-      - |
+
         wait_for_stack_complete() {
           while true; do
             check_stack_status
@@ -38,9 +38,10 @@ phases:
             fi
           done
         }
-      - check_stack_status
-      - if [ "$STACK_STATUS" = "CREATE_IN_PROGRESS" ] || [ "$STACK_STATUS" = "UPDATE_IN_PROGRESS" ]; then wait_for_stack_complete; fi
-      - |
+
+        check_stack_status
+        if [ "$STACK_STATUS" = "CREATE_IN_PROGRESS" ] || [ "$STACK_STATUS" = "UPDATE_IN_PROGRESS" ]; then wait_for_stack_complete; fi
+
         if ! aws cloudformation describe-stacks --stack-name $STACK_NAME; then
           echo "Stack does not exist, creating..."
           aws cloudformation create-stack --stack-name $STACK_NAME --template-body file://$TEMPLATE_FILE --capabilities CAPABILITY_IAM
