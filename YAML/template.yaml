@@ -443,13 +443,7 @@ Resources:
                 Version: 1
               Configuration:
                 ProjectName: !Ref CodeBuildProject
-                EnvironmentVariables: >-
-                  [
-                    {
-                      "name": "STACK_NAME",
-                      "value": !Ref StackNameParameter
-                    }
-                  ]
+                EnvironmentVariables: '[{"name":"STACK_NAME","value":"!Ref StackNameParameter"}]'
               InputArtifacts:
                 - Name: SourceOutput
               OutputArtifacts:
