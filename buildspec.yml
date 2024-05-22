@@ -19,12 +19,12 @@ phases:
       - export STACK_NAME=$(aws cloudformation describe-stacks --query "Stacks[0].StackName" --output text --region sa-east-1 || echo "MyCloudAppStack")
       - TEMPLATE_FILE=YAML/template.yaml
       - |
-        check_stack_status() {
+        function check_stack_status() {
           STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].StackStatus" --output text)
           echo "Current stack status: $STACK_STATUS"
         }
       - |
-        wait_for_stack_complete() {
+        function wait_for_stack_complete() {
           while true; do
             check_stack_status
             if [[ $STACK_STATUS == "CREATE_COMPLETE" || $STACK_STATUS == "UPDATE_COMPLETE" || $STACK_STATUS == "UPDATE_ROLLBACK_COMPLETE" || $STACK_STATUS == "ROLLBACK_COMPLETE" ]]; then
@@ -38,7 +38,6 @@ phases:
             fi
           done
         }
-      - check_stack_status
       - if [[ $STACK_STATUS == "CREATE_IN_PROGRESS" || $STACK_STATUS == "UPDATE_IN_PROGRESS" ]]; then wait_for_stack_complete; fi
       - |
         if ! aws cloudformation describe-stacks --stack-name $STACK_NAME; then
