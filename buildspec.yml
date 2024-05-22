@@ -27,9 +27,9 @@ phases:
         wait_for_stack_complete() {
           while true; do
             check_stack_status
-            if [[ $STACK_STATUS == "CREATE_COMPLETE" || $STACK_STATUS == "UPDATE_COMPLETE" || $STACK_STATUS == "UPDATE_ROLLBACK_COMPLETE" || $STACK_STATUS == "ROLLBACK_COMPLETE" ]]; then
+            if [ "$STACK_STATUS" = "CREATE_COMPLETE" ] || [ "$STACK_STATUS" = "UPDATE_COMPLETE" ] || [ "$STACK_STATUS" = "UPDATE_ROLLBACK_COMPLETE" ] || [ "$STACK_STATUS" = "ROLLBACK_COMPLETE" ]; then
               break
-            elif [[ $STACK_STATUS == "CREATE_IN_PROGRESS" || $STACK_STATUS == "UPDATE_IN_PROGRESS" ]]; then
+            elif [ "$STACK_STATUS" = "CREATE_IN_PROGRESS" ] || [ "$STACK_STATUS" = "UPDATE_IN_PROGRESS" ]; then
               echo "Stack operation in progress, waiting..."
               sleep 30
             else
@@ -38,7 +38,7 @@ phases:
             fi
           done
         }
-      - if [[ $STACK_STATUS == "CREATE_IN_PROGRESS" || $STACK_STATUS == "UPDATE_IN_PROGRESS" ]]; then wait_for_stack_complete; fi
+      - if [ "$STACK_STATUS" = "CREATE_IN_PROGRESS" ] || [ "$STACK_STATUS" = "UPDATE_IN_PROGRESS" ]; then wait_for_stack_complete; fi
       - |
         if ! aws cloudformation describe-stacks --stack-name $STACK_NAME; then
           echo "Stack does not exist, creating..."
@@ -50,10 +50,10 @@ phases:
           aws cloudformation update-stack --stack-name $STACK_NAME --template-body file://$TEMPLATE_FILE --capabilities CAPABILITY_IAM
           UPDATE_STATUS=$?
           set -e
-          if [ $UPDATE_STATUS -ne 0 ] && [ "$UPDATE_STATUS" != "255" ]; then
+          if [ $UPDATE_STATUS -ne 0 ] && [ $UPDATE_STATUS -ne 255 ]; then
             echo "Update failed with status: $UPDATE_STATUS"
             exit 1
-          elif [ "$UPDATE_STATUS" == "255" ]; then
+          elif [ $UPDATE_STATUS -eq 255 ]; then
             echo "No updates are to be performed."
           else
             aws cloudformation wait stack-update-complete --stack-name $STACK_NAME
