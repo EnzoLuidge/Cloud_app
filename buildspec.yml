@@ -16,9 +16,9 @@ phases:
   build:
     commands:
       - echo "Building and deploying the application..."
+      - export STACK_NAME=$(aws cloudformation describe-stacks --query "Stacks[0].StackName" --output text --region sa-east-1 || echo "MyCloudAppStack")
+      - TEMPLATE_FILE=YAML/template.yaml
       - |
-        STACK_NAME=${STACK_NAME:-MyCloudAppStack}
-        TEMPLATE_FILE=YAML/template.yaml
         if ! aws cloudformation describe-stacks --stack-name $STACK_NAME; then
           echo "Stack does not exist, creating..."
           aws cloudformation create-stack --stack-name $STACK_NAME --template-body file://$TEMPLATE_FILE --capabilities CAPABILITY_IAM
