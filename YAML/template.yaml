@@ -7,18 +7,15 @@ Resources:
     Properties:
       CidrBlock: 10.0.0.0/16
 
-  # Internet Gateway
   MyInternetGateway:
     Type: AWS::EC2::InternetGateway
 
-  # Attach Gateway to VPC
   GatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       VpcId: !Ref MyVPC
       InternetGatewayId: !Ref MyInternetGateway
 
-  # Public Subnet 1
   PublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
@@ -27,7 +24,6 @@ Resources:
       AvailabilityZone: sa-east-1a
       MapPublicIpOnLaunch: true
 
-  # Public Subnet 2
   PublicSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
@@ -36,13 +32,11 @@ Resources:
       AvailabilityZone: sa-east-1b
       MapPublicIpOnLaunch: true
 
-  # Route Table
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref MyVPC
 
-  # Public Route
   PublicRoute:
     Type: AWS::EC2::Route
     Properties:
@@ -50,7 +44,6 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref MyInternetGateway
 
-  # Associate Route Table to Subnets
   SubnetRouteTableAssociation1:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -96,7 +89,6 @@ Resources:
       SubnetId: !Ref MySubnet
       IamInstanceProfile: !Ref EC2InstanceProfile # Adicionando o instance profile
 
-  # Launch Configuration
   AppLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
@@ -129,7 +121,6 @@ Resources:
           # Executar a aplicação
           python3 app.py
 
-  # Auto Scaling Group
   AppAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
@@ -151,7 +142,6 @@ Resources:
           Value: ASG-EC2-Instance
           PropagateAtLaunch: true
 
-  # Políticas de Escalabilidade
   ScaleUpPolicy:
     Type: AWS::AutoScaling::ScalingPolicy
     Properties:
@@ -172,7 +162,6 @@ Resources:
       Cooldown: '300'
       ScalingAdjustment: '-1'
 
-  # CloudWatch Alarms
   HighCpuAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
@@ -209,20 +198,18 @@ Resources:
           Value: 
             Ref: AppAutoScalingGroup
 
-  # Application Load Balancer
   MyALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       Name: MyApplicationLoadBalancer
       Subnets:
-        - !Ref PublicSubnet1 # Substitua com suas subnets públicas
+        - !Ref PublicSubnet1
         - !Ref PublicSubnet2
       SecurityGroups:
-        - !Ref ALBSecurityGroup # Security Group que permite tráfego HTTP e HTTPS
+        - !Ref ALBSecurityGroup
       Scheme: internet-facing
       Type: application
 
-  # Listener para o ALB
   MyALBListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -233,7 +220,6 @@ Resources:
       Port: 80
       Protocol: HTTP
 
-  # Target Group para o ALB
   MyAppTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
@@ -248,7 +234,6 @@ Resources:
       HealthyThresholdCount: 3
       UnhealthyThresholdCount: 3
 
-  # Security Group para o ALB
   ALBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -314,3 +299,54 @@ Resources:
       VpcEndpointType: Gateway
       RouteTableIds:
         - !Ref PublicRouteTable
+
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: MyBuildProject
+      Source:
+        Type: GITHUB
+        Location: "https://github.com/EnzoLuidge/Cloud_app.git"
+      Environment:
+        Type: LINUX_CONTAINER
+        Image: "aws/codebuild/standard:5.0"
+        ComputeType: BUILD_GENERAL1_SMALL
+        EnvironmentVariables:
+          - Name: GITHUB_TOKEN
+            Value: !Sub "{{resolve:secretsmanager:MyGitHubToken:SecretString:github_token}}"
+        PrivilegedMode: true
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      Artifacts:
+        Type: NO_ARTIFACTS
+
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CodeBuildAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:GetBucketAcl
+                  - s3:GetBucketLocation
+                  - cloudformation:UpdateStack
+                Resource: "*"
+
+Outputs:
+  CodeBuildProjectName:
+    Value: !Ref CodeBuildProject
+    Export:
+      Name: CodeBuildProjectName
