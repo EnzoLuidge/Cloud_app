@@ -313,7 +313,7 @@ Resources:
         ComputeType: BUILD_GENERAL1_SMALL
         EnvironmentVariables:
           - Name: GITHUB_TOKEN
-            Value: !Sub "{{resolve:secretsmanager:MyGitHubToken:SecretString:github_token}}"
+            Value: !Sub "{{resolve:secretsmanager:MyGithubToken:SecretString:github_token}}"
         PrivilegedMode: true
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Artifacts:
