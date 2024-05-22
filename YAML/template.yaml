@@ -312,7 +312,7 @@ Resources:
         Image: "aws/codebuild/standard:5.0"
         ComputeType: BUILD_GENERAL1_SMALL
         EnvironmentVariables:
-          - Name: GITHUB_TOKEN
+          - Name: github_token
             Value: !Sub "{{resolve:secretsmanager:MyGithubToken:SecretString:github_token}}"
         PrivilegedMode: true
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
