@@ -1,6 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Template estendido com EC2 Auto Scaling, ALB e Dynamo
 
+Parameters:
+  StackNameParameter:
+    Type: String
+    Description: "The name of the CloudFormation stack"
+    Default: "MyCloudAppStack"
+
 Resources:
   MyVPC:
     Type: AWS::EC2::VPC
@@ -348,45 +354,6 @@ Resources:
                   - logs:PutLogEvents
                 Resource: "*"
 
-  CodePipelineRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: codepipeline.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: CodePipelineAccess
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - codebuild:BatchGetBuilds
-                  - codebuild:StartBuild
-                  - codebuild:StopBuild
-                  - codecommit:GitPull
-                  - codedeploy:CreateDeployment
-                  - codedeploy:GetApplication
-                  - codedeploy:GetApplicationRevision
-                  - codedeploy:GetDeployment
-                  - codedeploy:GetDeploymentConfig
-                  - codedeploy:RegisterApplicationRevision
-                  - iam:PassRole
-                  - sns:Publish
-                  - s3:*
-                  - cloudformation:CreateStack
-                  - cloudformation:DeleteStack
-                  - cloudformation:DescribeStacks
-                  - cloudformation:UpdateStack
-                  - cloudformation:CreateChangeSet
-                  - cloudformation:DeleteChangeSet
-                  - cloudformation:DescribeChangeSet
-                  - cloudformation:ExecuteChangeSet
-                Resource: "*"
   ArtifactBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -428,7 +395,7 @@ Resources:
                 ProjectName: !Ref CodeBuildProject
                 EnvironmentVariables:
                   - Name: STACK_NAME
-                    Value: !Sub "${AWS::StackName}-MyCloudAppStack"
+                    Value: !Ref StackNameParameter
               InputArtifacts:
                 - Name: SourceOutput
               OutputArtifacts:
@@ -462,14 +429,9 @@ Resources:
                 StackName: !Ref StackNameParameter
                 ChangeSetName: MyChangeSet
               RunOrder: 2
-Parameters:
-  StackNameParameter:
-    Type: String
-    Description: "The name of the CloudFormation stack"
-    Default: "MyCloudAppStack"
-    
+
 Outputs:
-  CodePipelineName:
-    Value: !Ref MyPipeline
+  CodeBuildProjectName:
+    Value: !Ref CodeBuildProject
     Export:
-      Name: CodePipelineName
+      Name: CodeBuildProjectName
