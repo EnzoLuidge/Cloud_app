@@ -343,6 +343,9 @@ Resources:
                   - s3:GetBucketAcl
                   - s3:GetBucketLocation
                   - cloudformation:UpdateStack
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
                 Resource: "*"
 
   CodePipelineRole:
@@ -423,6 +426,9 @@ Resources:
                 Version: 1
               Configuration:
                 ProjectName: !Ref CodeBuildProject
+                EnvironmentVariables:
+                  - Name: STACK_NAME
+                    Value: !Sub "${AWS::StackName}-MyCloudAppStack"
               InputArtifacts:
                 - Name: SourceOutput
               OutputArtifacts:
@@ -438,7 +444,7 @@ Resources:
                 Version: 1
               Configuration:
                 ActionMode: CHANGE_SET_REPLACE
-                StackName: MyCloudAppStack
+                StackName: !Ref StackNameParameter
                 ChangeSetName: MyChangeSet
                 TemplatePath: BuildOutput::YAML/template.yaml
                 Capabilities: CAPABILITY_IAM
@@ -453,10 +459,15 @@ Resources:
                 Version: 1
               Configuration:
                 ActionMode: CHANGE_SET_EXECUTE
-                StackName: MyCloudAppStack
+                StackName: !Ref StackNameParameter
                 ChangeSetName: MyChangeSet
               RunOrder: 2
-
+Parameters:
+  StackNameParameter:
+    Type: String
+    Description: "The name of the CloudFormation stack"
+    Default: "MyCloudAppStack"
+    
 Outputs:
   CodePipelineName:
     Value: !Ref MyPipeline
