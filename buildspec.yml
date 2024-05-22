@@ -16,7 +16,18 @@ phases:
   build:
     commands:
       - echo "Building and deploying the application..."
-      - aws cloudformation update-stack --stack-name MyCloudAppStack --template-body file://YAML/template.yaml --capabilities CAPABILITY_IAM
+      - |
+        STACK_NAME=${STACK_NAME:-MyCloudAppStack}
+        TEMPLATE_FILE=YAML/template.yaml
+        if ! aws cloudformation describe-stacks --stack-name $STACK_NAME; then
+          echo "Stack does not exist, creating..."
+          aws cloudformation create-stack --stack-name $STACK_NAME --template-body file://$TEMPLATE_FILE --capabilities CAPABILITY_IAM
+          aws cloudformation wait stack-create-complete --stack-name $STACK_NAME
+        else
+          echo "Stack exists, updating..."
+          aws cloudformation update-stack --stack-name $STACK_NAME --template-body file://$TEMPLATE_FILE --capabilities CAPABILITY_IAM
+          aws cloudformation wait stack-update-complete --stack-name $STACK_NAME
+        fi
 artifacts:
   files:
     - '**/*'
