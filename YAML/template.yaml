@@ -348,7 +348,12 @@ Resources:
                   - s3:GetObjectVersion
                   - s3:GetBucketAcl
                   - s3:GetBucketLocation
+                  - cloudformation:CreateStack
+                  - cloudformation:DescribeStacks
                   - cloudformation:UpdateStack
+                  - cloudformation:DeleteStack
+                  - cloudformation:ListStacks
+                  - cloudformation:ValidateTemplate
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
