@@ -10,7 +10,7 @@ phases:
       - echo "Installing dependencies..."
       - pip install awscli jq
       - echo "Retrieving GitHub token from Secrets Manager..."
-      - export GITHUB_TOKEN=$(aws secretsmanager get-secret-value --secret-id MyGitHubToken --query SecretString --output text | jq -r '.github_token')
+      - export GITHUB_TOKEN=$(aws secretsmanager get-secret-value --secret-id MyGithubToken --query SecretString --output text | jq -r '.github_token')
       - git config --global credential.helper 'store --file ~/.my-credentials'
       - echo "https://$GITHUB_TOKEN:@github.com" > ~/.my-credentials
   build:
