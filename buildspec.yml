@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   secrets-manager:
-    GITHUB_TOKEN: MyGitHubToken:github_token
+    GITHUB_TOKEN: MyGithubToken:github_token
 
 phases:
   pre_build:
