@@ -65,30 +65,26 @@
         input[type="submit"]:hover {
             background-color: #45a049;
         }
-        .edit-button, .delete-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            margin-left: 5px;
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
         }
-        .edit-button {
+        .edit-button, .delete-button {
             background-color: #ffc107;
             color: white;
             border: none;
             padding: 5px 10px;
             cursor: pointer;
             border-radius: 5px;
+            text-decoration: none;
         }
         .edit-button:hover {
             background-color: #e0a800;
         }
         .delete-button {
             background-color: #f44336;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 5px;
         }
         .delete-button:hover {
             background-color: #d32f2f;
@@ -112,10 +108,12 @@
             <div class="post">
                 <h2>{{ post['Title'] }}</h2>
                 <p>{{ post['Content'] }}</p>
-                <a href="{{ url_for('edit', post_id=post['Id']) }}" class="edit-button">Edit</a>
-                <form action="{{ url_for('delete', post_id=post['Id']) }}" method="post" style="display:inline;">
-                    <button type="submit" class="delete-button">Delete</button>
-                </form>
+                <div class="buttons">
+                    <a href="{{ url_for('edit', post_id=post['Id']) }}" class="edit-button">Edit</a>
+                    <form action="{{ url_for('delete', post_id=post['Id']) }}" method="post" style="display:inline;">
+                        <button type="submit" class="delete-button">Delete</button>
+                    </form>
+                </div>
             </div>
         {% endfor %}
     </div>
