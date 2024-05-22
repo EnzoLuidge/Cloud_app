@@ -409,6 +409,7 @@ Resources:
                   - cloudformation:ValidateTemplate
                   - s3:*
                   - secretsmanager:GetSecretValue
+                  - iam:PassRole
                 Resource: "*"
 
   ArtifactBucket:
