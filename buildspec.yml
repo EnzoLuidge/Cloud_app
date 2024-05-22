@@ -38,6 +38,7 @@ phases:
             fi
           done
         }
+      - check_stack_status
       - if [ "$STACK_STATUS" = "CREATE_IN_PROGRESS" ] || [ "$STACK_STATUS" = "UPDATE_IN_PROGRESS" ]; then wait_for_stack_complete; fi
       - |
         if ! aws cloudformation describe-stacks --stack-name $STACK_NAME; then
