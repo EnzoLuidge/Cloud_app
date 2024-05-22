@@ -1,4 +1,7 @@
 # Cloud Application with AWS Auto Scaling and DynamoDB
+# Meu Projeto
+
+Este é um projeto de exemplo para demonstrar a integração contínua usando AWS CodePipeline.
 
 This project demonstrates how to deploy a scalable web application using AWS services, including EC2, Auto Scaling, Application Load Balancer (ALB), and DynamoDB. The application is a simple Flask web app that allows users to create, read, update, and delete posts, with data stored in DynamoDB.
 
