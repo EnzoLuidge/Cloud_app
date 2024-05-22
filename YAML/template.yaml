@@ -354,11 +354,6 @@ Resources:
                   - logs:PutLogEvents
                 Resource: "*"
 
-  ArtifactBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub "${AWS::StackName}-artifacts-bucket"
-
   CodePipelineRole:
     Type: AWS::IAM::Role
     Properties:
@@ -378,27 +373,41 @@ Resources:
                 Action:
                   - codebuild:BatchGetBuilds
                   - codebuild:StartBuild
-                  - codecommit:GitPull
+                  - codebuild:StopBuild
+                  - codecommit:CancelUploadArchive
+                  - codecommit:CreateBranch
+                  - codecommit:CreateCommit
+                  - codecommit:DeleteBranch
+                  - codecommit:GetBranch
+                  - codecommit:GetCommit
+                  - codecommit:GetUploadArchiveStatus
+                  - codecommit:UploadArchive
+                  - codedeploy:CreateDeployment
                   - codedeploy:GetApplication
                   - codedeploy:GetApplicationRevision
                   - codedeploy:GetDeployment
-                  - codedeploy:RegisterApplicationRevision
-                  - codedeploy:CreateDeployment
                   - codedeploy:GetDeploymentConfig
                   - codedeploy:RegisterApplicationRevision
-                  - ecs:DescribeServices
-                  - ecs:DescribeTaskDefinition
-                  - ecs:DescribeTasks
-                  - ecs:ListTasks
-                  - ecs:UpdateService
-                  - elasticbeanstalk:* # Limitar se necessário
-                  - elasticloadbalancing:Describe*
                   - lambda:InvokeFunction
-                  - s3:GetObject
-                  - s3:GetObjectVersion
-                  - s3:PutObject
+                  - lambda:ListFunctions
+                  - cloudformation:CreateStack
+                  - cloudformation:DeleteStack
+                  - cloudformation:DescribeStacks
+                  - cloudformation:UpdateStack
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:DeleteChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:ExecuteChangeSet
+                  - cloudformation:SetStackPolicy
+                  - cloudformation:ValidateTemplate
+                  - s3:*
                   - secretsmanager:GetSecretValue
                 Resource: "*"
+
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${AWS::StackName}-artifacts-bucket"
 
   MyPipeline:
     Type: AWS::CodePipeline::Pipeline
@@ -434,7 +443,7 @@ Resources:
                 Version: 1
               Configuration:
                 ProjectName: !Ref CodeBuildProject
-                EnvironmentVariables:
+                EnvironmentVariables: 
                   - Name: STACK_NAME
                     Value: !Ref StackNameParameter
               InputArtifacts:
