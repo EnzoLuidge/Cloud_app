@@ -5,10 +5,15 @@ This project demonstrates how to deploy a scalable web application using AWS ser
 ## Table of Contents
 
 Architecture
+
 Prerequisites
+
 Setup
+
 Deploying the CloudFormation Stack
+
 Using the Application
+
 Cleanup
 
 
