@@ -14,6 +14,8 @@ Deploying the CloudFormation Stack
 
 Using the Application
 
+Load Testing with Locust
+
 Cleanup
 
 
@@ -60,18 +62,30 @@ cd Cloud_app
 
 Update the CloudFormation Template:
 
-Ensure the template.yaml file has the correct AMI ID for your region and the name of your SSH key pair:
+Ensure the template.yaml file located in the YAML directory has the correct AMI ID for your region and the name of your SSH key pair:
 
 
-MyEC2Instance:
+Resources:
 
-  Properties:
+  MyEC2Instance:
   
-    ImageId: ami-04716897be83e3f04 # Update this to a valid AMI ID in your region
+    Type: AWS::EC2::Instance
     
-    KeyName: YourKeyPairName # Update this to your key pair name
+    Properties:
+    
+      ImageId: ami-04716897be83e3f04 # Update this to a valid AMI ID in your region
+      
+      KeyName: YourKeyPairName # Update this to your key pair name
+
+Install Python dependencies:
+
+pip install -r requirements.txt
 
 ## Deploying the CloudFormation Stack
+
+Navigate to the YAML directory:
+
+cd YAML
 
 Create the CloudFormation stack:
 
@@ -85,7 +99,7 @@ You can monitor the stack creation process in the AWS CloudFormation console.
 
 Once the stack is created, follow these steps to use the application:
 
-Retrieve the Load Balancer DNS Name:
+**Retrieve the Load Balancer DNS Name:**
 
 Go to the AWS Management Console.
 
@@ -95,11 +109,35 @@ Click on "Load Balancers" in the left menu.
 
 Find the ALB created by the CloudFormation stack and copy its DNS name.
 
-Access the Application:
+**Access the Application:**
 
 Open your web browser and navigate to the ALB DNS name.
 
 You should see the application homepage where you can add, view, edit, and delete posts.
+
+## Load Testing with Locust
+
+To perform load testing on the application, follow these steps:
+
+Install Locust:
+
+pip install locust
+
+Navigate to the LOCUST directory:
+
+cd LOCUST
+
+Run Locust:
+
+locust -f locust.py
+
+Open Locust Web Interface:
+
+Open your web browser and navigate to http://localhost:8089.
+
+Configure the number of users and the spawn rate.
+
+Start the test to simulate load on your application.
 
 ## Cleanup
 
