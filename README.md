@@ -1,4 +1,4 @@
-Cloud Application with AWS Auto Scaling and DynamoDB
+**Cloud Application with AWS Auto Scaling and DynamoDB\n**
 This project demonstrates how to deploy a scalable web application using AWS services, including EC2, Auto Scaling, Application Load Balancer (ALB), and DynamoDB. The application is a simple Flask web app that allows users to create, read, update, and delete posts, with data stored in DynamoDB.
 
 Table of Contents
