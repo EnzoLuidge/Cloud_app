@@ -426,9 +426,9 @@ Resources:
                 Provider: GitHub
                 Version: 1
               Configuration:
-                Owner: EnzoLuidge
-                Repo: Cloud_app
-                Branch: main
+                Owner: "EnzoLuidge"
+                Repo: "Cloud_app"
+                Branch: "main"
                 OAuthToken: !Sub "{{resolve:secretsmanager:MyGithubToken:SecretString:github_token}}"
               OutputArtifacts:
                 - Name: SourceOutput
@@ -443,9 +443,13 @@ Resources:
                 Version: 1
               Configuration:
                 ProjectName: !Ref CodeBuildProject
-                EnvironmentVariables: 
-                  - Name: STACK_NAME
-                    Value: !Ref StackNameParameter
+                EnvironmentVariables: >-
+                  [
+                    {
+                      "name": "STACK_NAME",
+                      "value": !Ref StackNameParameter
+                    }
+                  ]
               InputArtifacts:
                 - Name: SourceOutput
               OutputArtifacts:
@@ -460,11 +464,11 @@ Resources:
                 Provider: CloudFormation
                 Version: 1
               Configuration:
-                ActionMode: CHANGE_SET_REPLACE
+                ActionMode: "CHANGE_SET_REPLACE"
                 StackName: !Ref StackNameParameter
-                ChangeSetName: MyChangeSet
-                TemplatePath: BuildOutput::YAML/template.yaml
-                Capabilities: CAPABILITY_IAM
+                ChangeSetName: "MyChangeSet"
+                TemplatePath: "BuildOutput::YAML/template.yaml"
+                Capabilities: "CAPABILITY_IAM"
               InputArtifacts:
                 - Name: BuildOutput
               RunOrder: 1
@@ -475,9 +479,9 @@ Resources:
                 Provider: CloudFormation
                 Version: 1
               Configuration:
-                ActionMode: CHANGE_SET_EXECUTE
+                ActionMode: "CHANGE_SET_EXECUTE"
                 StackName: !Ref StackNameParameter
-                ChangeSetName: MyChangeSet
+                ChangeSetName: "MyChangeSet"
               RunOrder: 2
 
 Outputs:
