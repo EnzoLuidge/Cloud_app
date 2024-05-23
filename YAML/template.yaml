@@ -396,7 +396,7 @@ Resources:
   CodePipelineRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: "fgf-CodePipelineRole"
+      RoleName: "abababababa-CodePipelineRole"
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
