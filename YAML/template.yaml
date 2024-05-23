@@ -12,9 +12,16 @@ Resources:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: 10.0.0.0/16
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-MyVPC"
 
   MyInternetGateway:
     Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-MyInternetGateway"
 
   GatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -29,6 +36,9 @@ Resources:
       CidrBlock: 10.0.3.0/24
       AvailabilityZone: sa-east-1a
       MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-PublicSubnet1"
 
   PublicSubnet2:
     Type: AWS::EC2::Subnet
@@ -37,11 +47,17 @@ Resources:
       CidrBlock: 10.0.4.0/24
       AvailabilityZone: sa-east-1b
       MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-PublicSubnet2"
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-PublicRouteTable"
 
   PublicRoute:
     Type: AWS::EC2::Route
@@ -68,6 +84,9 @@ Resources:
       VpcId: !Ref MyVPC
       CidrBlock: 10.0.1.0/24
       AvailabilityZone: sa-east-1a
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-MySubnet"
 
   MySecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -83,6 +102,9 @@ Resources:
           FromPort: 5000
           ToPort: 5000
           CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-MySecurityGroup"
 
   MyEC2Instance:
     Type: AWS::EC2::Instance
@@ -94,6 +116,9 @@ Resources:
         - !Ref MySecurityGroup
       SubnetId: !Ref MySubnet
       IamInstanceProfile: !Ref EC2InstanceProfile # Adicionando o instance profile
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-MyEC2Instance"
 
   AppLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
@@ -126,6 +151,9 @@ Resources:
 
           # Executar a aplicação
           python3 app.py
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-AppLaunchConfig"
 
   AppAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -215,6 +243,9 @@ Resources:
         - !Ref ALBSecurityGroup
       Scheme: internet-facing
       Type: application
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-MyALB"
 
   MyALBListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -254,11 +285,14 @@ Resources:
           FromPort: 443
           ToPort: 443
           CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-ALBSecurityGroup"
 
   MyDynamoDBTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: MyApplicationData
+      TableName: !Sub "${AWS::StackName}-MyApplicationData"
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: "Id"
@@ -359,8 +393,9 @@ Resources:
                   - logs:PutLogEvents
                   - iam:GetRole 
                   - iam:PutRolePolicy
+                  - iam:DeleteRole
                 Resource: "*"
-
+        
   CodePipelineRole:
     Type: AWS::IAM::Role
     Properties:
@@ -412,6 +447,7 @@ Resources:
                   - s3:*
                   - secretsmanager:GetSecretValue
                   - iam:PassRole 
+                  - iam:DeleteRole
                 Resource: "*"
 
   ArtifactBucket:
