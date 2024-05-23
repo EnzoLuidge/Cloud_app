@@ -528,7 +528,7 @@ Resources:
                 StackName: !Ref StackNameParameter
                 ChangeSetName: "MyChangeSet"
                 TemplatePath: "BuildOutput::YAML/template.yaml"
-                Capabilities: "CAPABILITY_IAM"
+                Capabilities: "CAPABILITY_NAMED_IAM"
                 RoleArn: !GetAtt CodePipelineRole.Arn # Adicionado RoleArn aqui
               InputArtifacts:
                 - Name: BuildOutput
