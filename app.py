@@ -6,8 +6,10 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Configurar o cliente DynamoDB
+stack_name = os.getenv('STACK_NAME')
+table_name = f"{stack_name}-MyApplicationData"
 dynamodb = boto3.resource('dynamodb', region_name='sa-east-1')
-table = dynamodb.Table('MyApplicationData')
+table = dynamodb.Table(table_name)
 
 @app.route('/')
 def index():
