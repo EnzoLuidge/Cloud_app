@@ -5,7 +5,7 @@ Parameters:
   StackNameParameter:
     Type: String
     Description: "The name of the CloudFormation stack"
-    Default: "MyCloudAppStack"
+    Default: "mycloudappstack"
 
 Resources:
   MyVPC:
@@ -15,6 +15,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-MyVPC"
+      
 
   MyInternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -22,6 +23,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-MyInternetGateway"
+     
 
   GatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -367,30 +369,12 @@ Resources:
               Service: codebuild.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: CodeBuildAccess
+        - PolicyName: AdministratorAccess
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
               - Effect: Allow
-                Action:
-                  - secretsmanager:GetSecretValue
-                  - s3:PutObject
-                  - s3:GetObject
-                  - s3:GetObjectVersion
-                  - s3:GetBucketAcl
-                  - s3:GetBucketLocation
-                  - cloudformation:CreateStack
-                  - cloudformation:DescribeStacks
-                  - cloudformation:UpdateStack
-                  - cloudformation:DeleteStack
-                  - cloudformation:ListStacks
-                  - cloudformation:ValidateTemplate
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                  - iam:GetRole 
-                  - iam:PutRolePolicy
-                  - iam:DeleteRole
+                Action: "*"
                 Resource: "*"
         
   CodePipelineRole:
@@ -402,78 +386,50 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service:
-              - codepipeline.amazonaws.com
-              - cloudformation.amazonaws.com
+              Service: 
+                - codepipeline.amazonaws.com
+                - cloudformation.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: CodePipelineAccess
+        - PolicyName: AdministratorAccess
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
               - Effect: Allow
-                Action:
-                  - codebuild:BatchGetBuilds
-                  - codebuild:StartBuild
-                  - codebuild:StopBuild
-                  - codecommit:CancelUploadArchive
-                  - codecommit:CreateBranch
-                  - codecommit:CreateCommit
-                  - codecommit:DeleteBranch
-                  - codecommit:GetBranch
-                  - codecommit:GetCommit
-                  - codecommit:GetUploadArchiveStatus
-                  - codecommit:UploadArchive
-                  - codedeploy:CreateDeployment
-                  - codedeploy:GetApplication
-                  - codedeploy:GetApplicationRevision
-                  - codedeploy:GetDeployment
-                  - codedeploy:GetDeploymentConfig
-                  - codedeploy:RegisterApplicationRevision
-                  - lambda:InvokeFunction
-                  - lambda:ListFunctions
-                  - cloudformation:CreateStack
-                  - cloudformation:DeleteStack
-                  - cloudformation:DescribeStacks
-                  - cloudformation:UpdateStack
-                  - cloudformation:CreateChangeSet
-                  - cloudformation:DeleteChangeSet
-                  - cloudformation:DescribeChangeSet
-                  - cloudformation:ExecuteChangeSet
-                  - cloudformation:SetStackPolicy
-                  - cloudformation:ValidateTemplate
-                  - s3:*
-                  - secretsmanager:GetSecretValue
-                  - iam:PassRole 
-                  - iam:DeleteRole
-                  - "dynamodb:DescribeTable"
-                  - "dynamodb:CreateTable"
-                  - "dynamodb:DeleteTable"
-                  - "dynamodb:UpdateTable"
-                  - "dynamodb:Scan"
-                  - "dynamodb:Query"
-                  - "dynamodb:GetItem"
-                  - "dynamodb:PutItem"
-                  - "dynamodb:DeleteItem"
-                  - "dynamodb:UpdateItem"
-                Resource: "*"
-        - PolicyName: "CodePipelineAdditionalPermissions"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: "Allow"
-                Action:
-                  - "s3:*"
-                  - "codecommit:*"
-                  - "codedeploy:*"
-                  - "cloudwatch:*"
-                  - "iam:PassRole"
+                Action: "*"
                 Resource: "*"
 
   ArtifactBucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub "${AWS::StackName}-artifacts-bucket"
+
+  CloudFormationExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: 
+                - "cloudformation.amazonaws.com"
+                - "ec2.amazonaws.com"
+                - "lambda.amazonaws.com"
+                - "s3.amazonaws.com"
+                - "dynamodb.amazonaws.com"
+                - "rds.amazonaws.com"
+                - "codebuild.amazonaws.com"
+                - "codepipeline.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: "CloudFormationFullAccess"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: "*"
+                Resource: "*"
 
   MyPipeline:
     Type: AWS::CodePipeline::Pipeline
