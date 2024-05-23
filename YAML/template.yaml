@@ -234,7 +234,7 @@ Resources:
   MyALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      Name: !Sub "${AWS::StackName}-MyApplicationLoadBalancer"
+      Name: !Sub "${AWS::StackName}-MyALB"
       Subnets:
         - !Ref PublicSubnet1
         - !Ref PublicSubnet2
