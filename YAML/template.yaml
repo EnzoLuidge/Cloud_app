@@ -396,7 +396,7 @@ Resources:
   CodePipelineRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: "abababababa-CodePipelineRole"
+      RoleName: !Sub "${AWS::StackName}-CodePipelineRole"
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
