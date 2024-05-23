@@ -151,9 +151,6 @@ Resources:
 
           # Executar a aplicação
           python3 app.py
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-AppLaunchConfig"
 
   AppAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
