@@ -345,9 +345,6 @@ Resources:
                   - secretsmanager:GetSecretValue
                   - s3:PutObject
                   - s3:GetObject
-                  - s3:*
-                  - cloudformation:*
-                  - logs:*
                   - s3:GetObjectVersion
                   - s3:GetBucketAcl
                   - s3:GetBucketLocation
@@ -360,12 +357,10 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                  - iam:GetRole
-                  - iam:DeleteRolePolicy
-                  - iam:CreateRole
+                  - iam:GetRole 
                   - iam:PutRolePolicy
                 Resource: "*"
-        
+
   CodePipelineRole:
     Type: AWS::IAM::Role
     Properties:
@@ -388,9 +383,6 @@ Resources:
                   - codebuild:BatchGetBuilds
                   - codebuild:StartBuild
                   - codebuild:StopBuild
-                  - codebuild:*
-                  - codecommit:*
-                  - codedeploy:*
                   - codecommit:CancelUploadArchive
                   - codecommit:CreateBranch
                   - codecommit:CreateCommit
@@ -418,14 +410,8 @@ Resources:
                   - cloudformation:SetStackPolicy
                   - cloudformation:ValidateTemplate
                   - s3:*
-                  - cloudformation:*
                   - secretsmanager:GetSecretValue
                   - iam:PassRole 
-                  - iam:GetRole
-                  - iam:DeleteRolePolicy
-                  - iam:CreateRole
-                  - iam:PutRolePolicy
-                  - cloudformation:DescribeStackEvents
                 Resource: "*"
 
   ArtifactBucket:
@@ -508,4 +494,4 @@ Outputs:
   CodeBuildProjectName:
     Value: !Ref CodeBuildProject
     Export:
-      Name: !Sub "${AWS::StackName}-CodeBuildProjectName"
+      Name: CodeBuildProjectName
