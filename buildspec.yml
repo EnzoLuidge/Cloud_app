@@ -16,7 +16,7 @@ phases:
   build:
     commands:
       - echo "Building and deploying the application..."
-      - if [ -z "$STACK_NAME" ]; then echo "STACK_NAME environment variable is not set. Exiting..."; exit 1; fi
+      - export STACK_NAME=$(aws cloudformation describe-stacks --query "Stacks[0].StackName" --output text --region sa-east-1 || echo "MyCloudAppStack")
       - TEMPLATE_FILE=YAML/template.yaml
       - |
         check_stack_status() {
@@ -39,7 +39,14 @@ phases:
           done
         }
 
-        if aws cloudformation describe-stacks --stack-name $STACK_NAME > /dev/null 2>&1; then
+        check_stack_status
+        if [ "$STACK_STATUS" = "CREATE_IN_PROGRESS" ] || [ "$STACK_STATUS" = "UPDATE_IN_PROGRESS" ]; then wait_for_stack_complete; fi
+
+        if ! aws cloudformation describe-stacks --stack-name $STACK_NAME; then
+          echo "Stack does not exist, creating..."
+          aws cloudformation create-stack --stack-name $STACK_NAME --template-body file://$TEMPLATE_FILE --capabilities CAPABILITY_IAM
+          aws cloudformation wait stack-create-complete --stack-name $STACK_NAME
+        else
           echo "Stack exists, updating..."
           set +e
           aws cloudformation update-stack --stack-name $STACK_NAME --template-body file://$TEMPLATE_FILE --capabilities CAPABILITY_IAM
@@ -53,9 +60,6 @@ phases:
           else
             aws cloudformation wait stack-update-complete --stack-name $STACK_NAME
           fi
-        else
-          echo "Stack does not exist or is in an invalid state for update."
-          exit 1
         fi
 artifacts:
   files:
