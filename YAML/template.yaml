@@ -411,7 +411,8 @@ Resources:
                   - cloudformation:ValidateTemplate
                   - s3:*
                   - secretsmanager:GetSecretValue
-                  - iam:PassRole
+                  - iam:PassRole 
+                  - cloudformation:DescribeStackEvents
                 Resource: "*"
 
   ArtifactBucket:
@@ -494,4 +495,4 @@ Outputs:
   CodeBuildProjectName:
     Value: !Ref CodeBuildProject
     Export:
-      Name: CodeBuildProjectName
+      Name: !Sub "${AWS::StackName}-CodeBuildProjectName"
