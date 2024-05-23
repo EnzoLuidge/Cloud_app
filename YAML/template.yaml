@@ -234,7 +234,7 @@ Resources:
   MyALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      Name: MyApplicationLoadBalancer
+      Name: !Sub "${AWS::StackName}-MyApplicationLoadBalancer"
       Subnets:
         - !Ref PublicSubnet1
         - !Ref PublicSubnet2
@@ -342,7 +342,7 @@ Resources:
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: MyBuildProject
+      Name: !Sub "${AWS::StackName}-MyBuildProject"
       Source:
         Type: GITHUB
         Location: "https://github.com/EnzoLuidge/Cloud_app.git"
