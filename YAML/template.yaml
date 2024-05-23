@@ -396,6 +396,7 @@ Resources:
   CodePipelineRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: "fgf-CodePipelineRole"
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -445,6 +446,28 @@ Resources:
                   - secretsmanager:GetSecretValue
                   - iam:PassRole 
                   - iam:DeleteRole
+                  - "dynamodb:DescribeTable"
+                  - "dynamodb:CreateTable"
+                  - "dynamodb:DeleteTable"
+                  - "dynamodb:UpdateTable"
+                  - "dynamodb:Scan"
+                  - "dynamodb:Query"
+                  - "dynamodb:GetItem"
+                  - "dynamodb:PutItem"
+                  - "dynamodb:DeleteItem"
+                  - "dynamodb:UpdateItem"
+                Resource: "*"
+        - PolicyName: "CodePipelineAdditionalPermissions"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "s3:*"
+                  - "codecommit:*"
+                  - "codedeploy:*"
+                  - "cloudwatch:*"
+                  - "iam:PassRole"
                 Resource: "*"
 
   ArtifactBucket:
