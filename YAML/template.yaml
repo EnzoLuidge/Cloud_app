@@ -142,6 +142,9 @@ Resources:
           sudo apt-get upgrade -y
           sudo apt-get install -y python3-pip git
 
+          echo "export STACK_NAME=${AWS::StackName}" | sudo tee -a /etc/profile.d/stackname.sh
+          source /etc/profile.d/stackname.sh
+          
           # Clonar o repositório do GitHub
           git clone https://github.com/EnzoLuidge/Cloud_app.git /home/ubuntu/Cloud_app
 
