@@ -345,6 +345,9 @@ Resources:
                   - secretsmanager:GetSecretValue
                   - s3:PutObject
                   - s3:GetObject
+                  - s3:*
+                  - cloudformation:*
+                  - logs:*
                   - s3:GetObjectVersion
                   - s3:GetBucketAcl
                   - s3:GetBucketLocation
@@ -357,7 +360,9 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                  - iam:GetRole 
+                  - iam:GetRole
+                  - iam:DeleteRolePolicy
+                  - iam:CreateRole
                   - iam:PutRolePolicy
                 Resource: "*"
         
@@ -383,6 +388,9 @@ Resources:
                   - codebuild:BatchGetBuilds
                   - codebuild:StartBuild
                   - codebuild:StopBuild
+                  - codebuild:*
+                  - codecommit:*
+                  - codedeploy:*
                   - codecommit:CancelUploadArchive
                   - codecommit:CreateBranch
                   - codecommit:CreateCommit
@@ -410,8 +418,13 @@ Resources:
                   - cloudformation:SetStackPolicy
                   - cloudformation:ValidateTemplate
                   - s3:*
+                  - cloudformation:*
                   - secretsmanager:GetSecretValue
                   - iam:PassRole 
+                  - iam:GetRole
+                  - iam:DeleteRolePolicy
+                  - iam:CreateRole
+                  - iam:PutRolePolicy
                   - cloudformation:DescribeStackEvents
                 Resource: "*"
 
