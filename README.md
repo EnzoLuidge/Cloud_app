@@ -1,4 +1,4 @@
-# Cloud Application with AWS Auto Scaling and DynamoDB
+# Cloud Application with AWS Auto Scaling, DynamoDB and CodePipeline
 
 stackzada-MyALB-1510882621.sa-east-1.elb.amazonaws.com
 
