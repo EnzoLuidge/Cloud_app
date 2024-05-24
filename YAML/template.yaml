@@ -166,7 +166,6 @@ Resources:
           python3 app.py
 
   AppAutoScalingGroup:
-    
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
       VPCZoneIdentifier:
@@ -176,6 +175,7 @@ Resources:
         Ref: AppLaunchConfig
       MinSize: '3'
       MaxSize: '4'
+      DesiredCapacity: '3'
       TargetGroupARNs:
         - Ref: MyAppTargetGroup
       HealthCheckGracePeriod: 300
@@ -186,6 +186,12 @@ Resources:
         - Key: Name
           Value: ASG-EC2-Instance
           PropagateAtLaunch: true
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        MinInstancesInService: '1'
+        MaxBatchSize: '1'
+        PauseTime: PT0S
+        WaitOnResourceSignals: true
 
   ScaleUpPolicy:
     
