@@ -4,7 +4,7 @@
 Este é um projeto de exemplo para demonstrar a integração yuhyuhucontínua usando AWS CodePipeline.
 testedfdfsldklsassasadasasdffasdfasdfasdfxcxcasdfadsf
 ascascadscasdddsdasdcsdfdcwefewfdfdf
-This project demonstratesxxhow to deploy a scalable web asdfpplication using AWS services, including EC2, Auto Scaling, Application Load Balancer (ALB), and DynamoDB. The application is a simdfpledf Flask web app that allows users to create, read, update, and delete posts, with data stored in DynamoDB.
+This project demonstratesxxhow to deploy a scalablasdfe web asdfpplication using AWS services, including EC2, Auto Scaling, Application Load Balancer (ALB), and DynamoDB. The application is a simdfpledf Flask web app that allows users to create, read, update, and delete posts, with data stored in DynamoDB.
 
 ## Table of Contents
 
