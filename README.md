@@ -1,12 +1,8 @@
 # Cloud Application with AWS Auto Scaling and DynamoDB
-# Meu Projeto
 
-Este é um projeto de exemplo para demonstrar a integração yuhyuhucontínua usando AWS CodePipeline.
-testedfdfsldklsassasadasasdffasdfasdfasdfxcxcasdfadsf
-ascascadscasdddsdasdcsdfdcwefewfdfdf
-This project demonstratesxxhdfow to deploy a scalablasdfe web asdfpplication using AWS services, including EC2, Auto Scaling, Application Load Balancer (ALB), and DynamoDB. The application is a simdfpledf Flask web app that allows users to create, read, update, and delete posts, with data stored in DynamoDB.
+This project demonstrates how to deploy a scalable web application using AWS services, including EC2, Auto Scaling, Application Load Balancer (ALB), and DynamoDB. The application is a simple Flask web app that allows users to create, read, update, and delete posts, with data stored in DynamoDB.
 
-## Table of Contents
+# Table of Contents
 
 Architecture
 
@@ -16,14 +12,15 @@ Setup
 
 Deploying the CloudFormation Stack
 
+Setting Up the CI/CD Pipeline
+
 Using the Application
 
 Load Testing with Locust
 
 Cleanup
 
-
-## Architecture
+# Architecture
 
 The architecture of this project includes the following components:
 
@@ -45,8 +42,11 @@ DynamoDB: To store application data.
 
 IAM Roles: To provide the necessary permissions to EC2 instances.
 
+CodePipeline: For continuous integration and deployment (CI/CD).
 
-## Prerequisites
+Secrets Manager: For securely storing and accessing secrets such as GitHub tokens.
+
+# Prerequisites
 
 Before you begin, ensure you have the following:
 
@@ -56,8 +56,9 @@ AWS CLI installed and configured.
 
 An SSH key pair in your AWS account (you'll need the key pair name).
 
-## Setup
+A GitHub account and repository forked from Cloud_app.
 
+# Setup
 Clone the repository:
 
 git clone https://github.com/EnzoLuidge/Cloud_app.git
@@ -68,42 +69,58 @@ Update the CloudFormation Template:
 
 Ensure the template.yaml file located in the YAML directory has the correct AMI ID for your region and the name of your SSH key pair:
 
-
 Resources:
-
   MyEC2Instance:
-  
     Type: AWS::EC2::Instance
-    
     Properties:
-    
       ImageId: ami-04716897be83e3f04 # Update this to a valid AMI ID in your region
-      
       KeyName: YourKeyPairName # Update this to your key pair name
-
+      
 Install Python dependencies:
 
 pip install -r requirements.txt
 
-## Deploying the CloudFormation Stack
+Deploying the CloudFormation Stack
 
 Navigate to the YAML directory:
 
 cd YAML
 
-Create the CloudFormation stack:
+Create the CloudFormation stack for the infrastructure:
 
-aws cloudformation create-stack --stack-name MyCloudAppStack --template-body file://template.yaml --capabilities CAPABILITY_IAM
+aws cloudformation create-stack --stack-name stackzada --template-body file://template.yaml --capabilities CAPABILITY_IAM
 
 Wait for the stack to be created:
 
 You can monitor the stack creation process in the AWS CloudFormation console.
 
-## Using the Application
+# Setting Up the CI/CD Pipeline
+
+Once the infrastructure stack is created, you need to set up the CI/CD pipeline:
+
+Create a secret in AWS Secrets Manager to store your GitHub token:
+
+Go to the AWS Secrets Manager console.
+
+Click "Store a new secret".
+
+Choose "Other type of secrets".
+
+Add a secret key github_token and your GitHub token as the value.
+
+Name the secret MyGithubToken.
+
+Create the CloudFormation stack for the pipeline:
+
+aws cloudformation create-stack --stack-name MyPipelineStack --template-body file://pipeline.yaml --capabilities CAPABILITY_NAMED_IAM
+
+This stack sets up a CodePipeline that automatically deploys updates to your application when changes are pushed to your GitHub repository.
+
+# Using the Application
 
 Once the stack is created, follow these steps to use the application:
 
-**Retrieve the Load Balancer DNS Name:**
+Retrieve the Load Balancer DNS Name:
 
 Go to the AWS Management Console.
 
@@ -113,14 +130,11 @@ Click on "Load Balancers" in the left menu.
 
 Find the ALB created by the CloudFormation stack and copy its DNS name.
 
-**Access the Application:**
+# Access the Application:
 
-Open your web browser and navigate to the ALB DNS name.
+Open your web browser and navigate to the ALB DNS name. You should see the application homepage where you can add, view, edit, and delete posts.
 
-You should see the application homepage where you can add, view, edit, and delete posts.
-
-## Load Testing with Locust
-
+# Load Testing with Locust
 To perform load testing on the application, follow these steps:
 
 Install Locust:
@@ -137,14 +151,14 @@ locust -f locust.py
 
 Open Locust Web Interface:
 
-Open your web browser and navigate to http://localhost:8089.
+Open your web browser and navigate to http://localhost:8089. Configure the number of users and the spawn rate. Start the test to simulate load on your application.
 
-Configure the number of users and the spawn rate.
-
-Start the test to simulate load on your application.
-
-## Cleanup
+Cleanup
 
 To delete all resources created by the CloudFormation stack, run:
 
-aws cloudformation delete-stack --stack-name MyCloudAppStack
+aws cloudformation delete-stack --stack-name stackzada
+
+aws cloudformation delete-stack --stack-name MyPipelineStack
+
+This will clean up all the resources created by the CloudFormation stacks, including the infrastructure and the CI/CD pipeline.
