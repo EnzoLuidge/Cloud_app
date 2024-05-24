@@ -1,14 +1,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Template estendido com EC2 Auto Scaling, ALB e Dynamo
 
-Parameters:
-  StackNameParameter:
-    Type: String
-    Description: "The name of the CloudFormation stack"
-    Default: "mycloudappstack"
 
 Resources:
   MyVPC:
+    
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: 10.0.0.0/16
@@ -18,6 +14,7 @@ Resources:
       
 
   MyInternetGateway:
+    
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
@@ -26,12 +23,14 @@ Resources:
      
 
   GatewayAttachment:
+    
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       VpcId: !Ref MyVPC
       InternetGatewayId: !Ref MyInternetGateway
 
   PublicSubnet1:
+    
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref MyVPC
@@ -43,6 +42,7 @@ Resources:
           Value: !Sub "${AWS::StackName}-PublicSubnet1"
 
   PublicSubnet2:
+    
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref MyVPC
@@ -54,6 +54,7 @@ Resources:
           Value: !Sub "${AWS::StackName}-PublicSubnet2"
 
   PublicRouteTable:
+    
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref MyVPC
@@ -62,6 +63,7 @@ Resources:
           Value: !Sub "${AWS::StackName}-PublicRouteTable"
 
   PublicRoute:
+    
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref PublicRouteTable
@@ -69,18 +71,21 @@ Resources:
       GatewayId: !Ref MyInternetGateway
 
   SubnetRouteTableAssociation1:
+    
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PublicSubnet1
       RouteTableId: !Ref PublicRouteTable
 
   SubnetRouteTableAssociation2:
+    
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PublicSubnet2
       RouteTableId: !Ref PublicRouteTable
 
   MySubnet:
+    
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref MyVPC
@@ -91,6 +96,7 @@ Resources:
           Value: !Sub "${AWS::StackName}-MySubnet"
 
   MySecurityGroup:
+    
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Permitir SSH
@@ -109,6 +115,7 @@ Resources:
           Value: !Sub "${AWS::StackName}-MySecurityGroup"
 
   MyEC2Instance:
+    
     Type: AWS::EC2::Instance
     Properties:
       ImageId: ami-04716897be83e3f04 # Substitua por uma AMI válida em sua região
@@ -123,6 +130,7 @@ Resources:
           Value: !Sub "${AWS::StackName}-MyEC2Instance"
 
   AppLaunchConfig:
+    
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
       ImageId: ami-04716897be83e3f04 # Substitua pela AMI da sua aplicação
@@ -158,6 +166,7 @@ Resources:
           python3 app.py
 
   AppAutoScalingGroup:
+    
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
       VPCZoneIdentifier:
@@ -179,6 +188,7 @@ Resources:
           PropagateAtLaunch: true
 
   ScaleUpPolicy:
+    
     Type: AWS::AutoScaling::ScalingPolicy
     Properties:
       AutoScalingGroupName:
@@ -189,6 +199,7 @@ Resources:
       ScalingAdjustment: '1'
 
   ScaleDownPolicy:
+    
     Type: AWS::AutoScaling::ScalingPolicy
     Properties:
       AutoScalingGroupName:
@@ -199,6 +210,7 @@ Resources:
       ScalingAdjustment: '-1'
 
   HighCpuAlarm:
+    
     Type: AWS::CloudWatch::Alarm
     Properties:
       AlarmDescription: "Alarm when CPU exceeds 70%"
@@ -217,6 +229,7 @@ Resources:
             Ref: AppAutoScalingGroup
 
   LowCpuAlarm:
+    
     Type: AWS::CloudWatch::Alarm
     Properties:
       AlarmDescription: "Alarm when CPU falls below 30%"
@@ -235,6 +248,7 @@ Resources:
             Ref: AppAutoScalingGroup
 
   MyALB:
+    
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       Name: !Sub "${AWS::StackName}-MyALB"
@@ -250,6 +264,7 @@ Resources:
           Value: !Sub "${AWS::StackName}-MyALB"
 
   MyALBListener:
+    
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       DefaultActions:
@@ -260,6 +275,7 @@ Resources:
       Protocol: HTTP
 
   MyAppTargetGroup:
+    
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       VpcId: !Ref MyVPC
@@ -274,6 +290,7 @@ Resources:
       UnhealthyThresholdCount: 3
 
   ALBSecurityGroup:
+    
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allow HTTP and HTTPS to ALB
@@ -292,6 +309,7 @@ Resources:
           Value: !Sub "${AWS::StackName}-ALBSecurityGroup"
 
   MyDynamoDBTable:
+    
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: !Sub "${AWS::StackName}-MyApplicationData"
@@ -304,11 +322,13 @@ Resources:
           KeyType: "HASH"
 
   EC2InstanceProfile:
+    
     Type: AWS::IAM::InstanceProfile
     Properties:
       Roles: [!Ref EC2Role]
 
   EC2Role:
+    
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -338,6 +358,7 @@ Resources:
                 Resource: !GetAtt MyDynamoDBTable.Arn
 
   DynamoDBEndpoint:
+    
     Type: AWS::EC2::VPCEndpoint
     Properties:
       VpcId: !Ref MyVPC
@@ -345,172 +366,3 @@ Resources:
       VpcEndpointType: Gateway
       RouteTableIds:
         - !Ref PublicRouteTable
-
-  CodeBuildProject:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Name: !Sub "${AWS::StackName}-MyBuildProject"
-      Source:
-        Type: GITHUB
-        Location: "https://github.com/EnzoLuidge/Cloud_app.git"
-      Environment:
-        Type: LINUX_CONTAINER
-        Image: "aws/codebuild/standard:5.0"
-        ComputeType: BUILD_GENERAL1_SMALL
-        EnvironmentVariables:
-          - Name: GITHUB_TOKEN
-            Value: !Sub "{{resolve:secretsmanager:MyGithubToken:SecretString:github_token}}"
-        PrivilegedMode: true
-      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
-      Artifacts:
-        Type: NO_ARTIFACTS
-
-  CodeBuildServiceRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: codebuild.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: AdministratorAccess
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action: "*"
-                Resource: "*"
-        
-  CodePipelineRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: !Sub "${AWS::StackName}-CodePipelineRole"
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: 
-                - codepipeline.amazonaws.com
-                - cloudformation.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: AdministratorAccess
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action: "*"
-                Resource: "*"
-
-  ArtifactBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub "${AWS::StackName}-artifacts-bucket"
-
-  CloudFormationExecutionRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: "Allow"
-            Principal:
-              Service: 
-                - "cloudformation.amazonaws.com"
-                - "ec2.amazonaws.com"
-                - "lambda.amazonaws.com"
-                - "s3.amazonaws.com"
-                - "dynamodb.amazonaws.com"
-                - "rds.amazonaws.com"
-                - "codebuild.amazonaws.com"
-                - "codepipeline.amazonaws.com"
-            Action: "sts:AssumeRole"
-      Policies:
-        - PolicyName: "CloudFormationFullAccess"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: "Allow"
-                Action: "*"
-                Resource: "*"
-
-  MyPipeline:
-    Type: AWS::CodePipeline::Pipeline
-    Properties:
-      RoleArn: !GetAtt CodePipelineRole.Arn
-      ArtifactStore:
-        Type: S3
-        Location: !Ref ArtifactBucket
-      Stages:
-        - Name: Source
-          Actions:
-            - Name: SourceAction
-              ActionTypeId:
-                Category: Source
-                Owner: ThirdParty
-                Provider: GitHub
-                Version: 1
-              Configuration:
-                Owner: "EnzoLuidge"
-                Repo: "Cloud_app"
-                Branch: "main"
-                OAuthToken: !Sub "{{resolve:secretsmanager:MyGithubToken:SecretString:github_token}}"
-              OutputArtifacts:
-                - Name: SourceOutput
-              RunOrder: 1
-        - Name: Build
-          Actions:
-            - Name: BuildAction
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Provider: CodeBuild
-                Version: 1
-              Configuration:
-                ProjectName: !Ref CodeBuildProject
-                EnvironmentVariables: '[{"name":"STACK_NAME","value":"!Ref StackNameParameter"}]'
-              InputArtifacts:
-                - Name: SourceOutput
-              OutputArtifacts:
-                - Name: BuildOutput
-              RunOrder: 1
-        - Name: Deploy
-          Actions:
-            - Name: DeployAction
-              ActionTypeId:
-                Category: Deploy
-                Owner: AWS
-                Provider: CloudFormation
-                Version: 1
-              Configuration:
-                ActionMode: "CHANGE_SET_REPLACE"
-                StackName: !Ref StackNameParameter
-                ChangeSetName: "MyChangeSet"
-                TemplatePath: "BuildOutput::YAML/template.yaml"
-                Capabilities: "CAPABILITY_NAMED_IAM"
-                RoleArn: !GetAtt CodePipelineRole.Arn # Adicionado RoleArn aqui
-              InputArtifacts:
-                - Name: BuildOutput
-              RunOrder: 1
-            - Name: ExecuteChangeSet
-              ActionTypeId:
-                Category: Deploy
-                Owner: AWS
-                Provider: CloudFormation
-                Version: 1
-              Configuration:
-                ActionMode: "CHANGE_SET_EXECUTE"
-                StackName: !Ref StackNameParameter
-                ChangeSetName: "MyChangeSet"
-                RoleArn: !GetAtt CodePipelineRole.Arn # Adicionado RoleArn aqui
-              RunOrder: 2
-
-Outputs:
-  CodeBuildProjectName:
-    Value: !Ref CodeBuildProject
-    Export:
-      Name: !Sub "${AWS::StackName}-CodeBuildProjectName"
