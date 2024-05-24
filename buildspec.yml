@@ -16,12 +16,12 @@ phases:
   build:
     commands:
       - echo "Building and deploying the application..."
-      - export STACK_NAME=$(aws cloudformation describe-stacks --query "Stacks[0].StackName" --output text --region sa-east-1 || echo "MyCloudAppStack")
-      - if [ -z "$STACK_NAME" ]; then echo "STACK_NAME environment variable is not set. Exiting..."; exit 1; fi
+      - export INFRA_STACK_NAME=$(aws cloudformation describe-stacks --query "Stacks[?StackName=='infra-stack'].StackName" --output text --region sa-east-1 || echo "infra-stack")
+      - if [ -z "$INFRA_STACK_NAME" ]; then echo "INFRA_STACK_NAME environment variable is not set. Exiting..."; exit 1; fi
       - TEMPLATE_FILE=YAML/template.yaml
       - |
         check_stack_status() {
-          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].StackStatus" --output text)
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $INFRA_STACK_NAME --query "Stacks[0].StackStatus" --output text)
           echo "Current stack status: $STACK_STATUS"
         }
 
@@ -40,10 +40,10 @@ phases:
           done
         }
 
-        if aws cloudformation describe-stacks --stack-name $STACK_NAME > /dev/null 2>&1; then
+        if aws cloudformation describe-stacks --stack-name $INFRA_STACK_NAME > /dev/null 2>&1; then
           echo "Stack exists, updating..."
           set +e
-          aws cloudformation update-stack --stack-name $STACK_NAME --template-body file://$TEMPLATE_FILE --capabilities CAPABILITY_IAM
+          aws cloudformation update-stack --stack-name $INFRA_STACK_NAME --template-body file://$TEMPLATE_FILE --capabilities CAPABILITY_NAMED_IAM
           UPDATE_STATUS=$?
           set -e
           if [ $UPDATE_STATUS -ne 0 ] && [ $UPDATE_STATUS -ne 255 ]; then
@@ -52,7 +52,7 @@ phases:
           elif [ $UPDATE_STATUS -eq 255 ]; then
             echo "No updates are to be performed."
           else
-            aws cloudformation wait stack-update-complete --stack-name $STACK_NAME
+            aws cloudformation wait stack-update-complete --stack-name $INFRA_STACK_NAME
           fi
         else
           echo "Stack does not exist or is in an invalid state for update."
