@@ -76,7 +76,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       ImageId: ami-04716897be83e3f04 # Update this to a valid AMI ID in your region
-      KeyName: YourKeyPairName # Update this to your key pair name
+      KeyName: YourKeyPairName # Update this to your key pair name, or just put EnzoProjeto on the name of your pair keys
       
 Install Python dependencies:
 
